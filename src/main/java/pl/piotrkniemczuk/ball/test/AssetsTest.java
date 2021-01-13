@@ -6,6 +6,7 @@ import pl.piotrkniemczuk.ball.engine.*;
 
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.glfw.GLFW.*;
+import static pl.piotrkniemczuk.ball.engine.Input.*;
 
 /**
  * Test Basic Assets
@@ -15,7 +16,6 @@ public class AssetsTest {
     public AssetsTest(){
         try {
             Window window = new Window(800, 600, "Assets Test");
-            Input input = new Input(window);
 
             float[] vertices = {
                     -0.5f, 0.5f, 0.0f,
@@ -45,7 +45,7 @@ public class AssetsTest {
             glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
             while(window.isOpen()){
 
-                if(input.isKeyPressed(GLFW_KEY_ESCAPE))
+                if(isKeyPressed(GLFW_KEY_ESCAPE))
                     glfwSetWindowShouldClose(window.getWindow(), true);
 
                 /*

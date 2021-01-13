@@ -3,7 +3,6 @@ package pl.piotrkniemczuk.ball.engine;
 import pl.piotrkniemczuk.ball.assets.Assets;
 import pl.piotrkniemczuk.ball.assets.Mesh;
 import pl.piotrkniemczuk.ball.graphics.*;
-import pl.piotrkniemczuk.ball.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ import static org.lwjgl.glfw.GLFW.*;
 public class GameEngine implements Dispose {
 
     private final Window window;
-    private final Input input;
     private Graphic graphic;
     private int fps;
     private State state;
@@ -25,7 +23,7 @@ public class GameEngine implements Dispose {
                 settings.getWindowSize().y,
                 settings.getTitle(),
                 settings.isFullscreen());
-        this.input = new Input(window);
+        Input.init(window);
         this.fps = settings.getFPS();
         AssetsInitialize(settings);
         GraphicInitialize(settings);
@@ -56,15 +54,15 @@ public class GameEngine implements Dispose {
         Camera camera = null;
         switch(settings.getCameraType()){
             case "free":
-                camera = new FreeCamera(settings.getCameraPos(), input, window);
+                camera = new FreeCamera(settings.getCameraPos(), window);
                 break;
 
             case "player":
-                camera = new PlayerCamera(settings.getCameraPos(), input, window);
+                camera = new PlayerCamera(settings.getCameraPos(), window);
                 break;
 
             default:
-                camera = new FreeCamera(settings.getCameraPos(), input, window);
+                camera = new FreeCamera(settings.getCameraPos(), window);
                 break;
         }
         this.graphic.setCamera(camera);
@@ -91,11 +89,11 @@ public class GameEngine implements Dispose {
             if (delta > 1.0 / fps) {
                 lastTime = currentTime;
                 graphic.update((float) delta);
-                state.Update(window, input, this, (float) delta);
+                state.Update(window, this, (float) delta);
                 CollisionDetection();
             }
             graphic.render();
-            state.Render(window, input, this);
+            state.Render(window, this);
             window.display();
         }
         clearMemory();
@@ -106,11 +104,7 @@ public class GameEngine implements Dispose {
         for (Collider collider : colliders) {
             for (Collider collider1 : colliders) {
                 if (collider != collider1) {
-                    if (
-                                    collider.getUp() >= collider1.getDown() && collider.getDown() <= collider1.getUp() &&
-                                    collider.getLeft() <= collider1.getRight() && collider.getRight() >= collider1.getLeft() &&
-                                    collider.getForward() >= collider1.getBack() && collider.getBack() <= collider1.getForward()
-                    ) {
+                    if (collider.isCollision(collider1)) {
                         if (!collider.getEnteredCollider().contains(collider1)) {
                             collider.enter(collider1);
                             collider.getEnteredCollider().add(collider1);
@@ -147,12 +141,13 @@ public class GameEngine implements Dispose {
 
     public void setState(State state) {
         this.state = state;
-        this.state.Init(window, input, this);
+        this.state.Init(window, this);
     }
 
     @Override
     public void clearMemory() {
         Assets.getInstance().clearMemory();
         this.window.clearMemory();
+        this.state.clearMemory();
     }
 }

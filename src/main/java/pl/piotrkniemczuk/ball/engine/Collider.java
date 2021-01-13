@@ -27,6 +27,12 @@ public abstract class Collider extends Transform {
         this.enteredCollider = new ArrayList<>();
     }
 
+    public boolean isCollision(Collider collider){
+        return getUp() >= collider.getDown() && getDown() <= collider.getUp() &&
+                getLeft() <= collider.getRight() && getRight() >= collider.getLeft() &&
+                getForward() >= collider.getBack() && getBack() <= collider.getForward();
+    }
+
     public float getUp(){
         return position.y + (1.0f * scale.y);
     }

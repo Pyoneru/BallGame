@@ -5,15 +5,16 @@ import pl.piotrkniemczuk.ball.engine.Input;
 import pl.piotrkniemczuk.ball.engine.Window;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static pl.piotrkniemczuk.ball.engine.Input.*;
 
 public class PlayerCamera extends FreeCamera {
 
-    public PlayerCamera(Vector3f cameraPosition, Input input, Window window) {
-        super(cameraPosition, input, window);
+    public PlayerCamera(Vector3f cameraPosition, Window window) {
+        super(cameraPosition, window);
     }
 
     public PlayerCamera(Input input, Window window) {
-        super(input, window);
+        super(window);
     }
 
     @Override
@@ -21,25 +22,25 @@ public class PlayerCamera extends FreeCamera {
         float y = position.y;
         float velocity = this.velocity * delta;
 
-        if(input.isKeyDown(GLFW_KEY_LEFT_SHIFT)){
+        if(isKeyDown(GLFW_KEY_LEFT_SHIFT)){
             velocity *= 10;
         }
 
-        if(input.isKeyDown(GLFW_KEY_W)){
+        if(isKeyDown(GLFW_KEY_W)){
             Vector3f mul = new Vector3f();
             cameraFront.mul(velocity, mul);
             position.add(mul, position);
-        }else if(input.isKeyDown(GLFW_KEY_S)){
+        }else if(isKeyDown(GLFW_KEY_S)){
             Vector3f mul = new Vector3f();
             cameraFront.mul(-velocity, mul);
             position.add(mul, position);
         }
 
-        if(input.isKeyDown(GLFW_KEY_A)){
+        if(isKeyDown(GLFW_KEY_A)){
             Vector3f mul = new Vector3f();
             cameraRight.mul(-velocity, mul);
             position.add(mul, position);
-        }else if(input.isKeyDown(GLFW_KEY_D)){
+        }else if(isKeyDown(GLFW_KEY_D)){
             Vector3f mul = new Vector3f();
             cameraRight.mul(velocity, mul);
             position.add(mul, position);

@@ -3,13 +3,13 @@ package pl.piotrkniemczuk.ball.test;
 import org.joml.Matrix4f;
 import pl.piotrkniemczuk.ball.graphics.Color;
 import pl.piotrkniemczuk.ball.assets.Mesh;
-import pl.piotrkniemczuk.ball.engine.Input;
 import pl.piotrkniemczuk.ball.engine.Transform;
 import pl.piotrkniemczuk.ball.assets.Shader;
 import pl.piotrkniemczuk.ball.engine.Window;
 
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.glfw.GLFW.*;
+import static pl.piotrkniemczuk.ball.engine.Input.*;
 
 /**
  * Test Transform And Color
@@ -17,11 +17,9 @@ import static org.lwjgl.glfw.GLFW.*;
 public class TransformationAndColorTest {
 
     private Window window;
-    private Input input;
 
     public TransformationAndColorTest(){
         window = new Window(1280, 720, "Transformation and Color Test");
-        input = new Input(window);
 
         float[] vertices = {
                 -0.5f, 0.5f, 0.0f,
@@ -71,51 +69,51 @@ public class TransformationAndColorTest {
     }
 
     private void Input(Transform transform){
-        if(input.isKeyPressed(GLFW_KEY_ESCAPE))
+        if(isKeyPressed(GLFW_KEY_ESCAPE))
             glfwSetWindowShouldClose(window.getWindow(), true);
 
         float speed = 0.1f;
 
         // Position
-        if(input.isKeyDown(GLFW_KEY_W))
+        if(isKeyDown(GLFW_KEY_W))
             transform.position.y += speed;
-        if(input.isKeyDown(GLFW_KEY_S))
+        if(isKeyDown(GLFW_KEY_S))
             transform.position.y -= speed;
-        if(input.isKeyDown(GLFW_KEY_A))
+        if(isKeyDown(GLFW_KEY_A))
             transform.position.x -= speed;
-        if(input.isKeyDown(GLFW_KEY_D))
+        if(isKeyDown(GLFW_KEY_D))
             transform.position.x += speed;
-        if(input.isKeyDown(GLFW_KEY_Z))
+        if(isKeyDown(GLFW_KEY_Z))
             transform.position.z += speed;
-        if(input.isKeyDown(GLFW_KEY_X))
+        if(isKeyDown(GLFW_KEY_X))
             transform.position.z -= speed;
 
         // Rotation
-        if(input.isKeyDown(GLFW_KEY_Q))
+        if(isKeyDown(GLFW_KEY_Q))
             transform.rotation.x -= speed;
-        if(input.isKeyDown(GLFW_KEY_E))
+        if(isKeyDown(GLFW_KEY_E))
             transform.rotation.x += speed;
-        if(input.isKeyDown(GLFW_KEY_R))
+        if(isKeyDown(GLFW_KEY_R))
             transform.rotation.y -= speed;
-        if(input.isKeyDown(GLFW_KEY_T))
+        if(isKeyDown(GLFW_KEY_T))
             transform.rotation.y += speed;
-        if(input.isKeyDown(GLFW_KEY_Y))
+        if(isKeyDown(GLFW_KEY_Y))
             transform.rotation.z -= speed;
-        if(input.isKeyDown(GLFW_KEY_U))
+        if(isKeyDown(GLFW_KEY_U))
             transform.rotation.z += speed;
 
         // Scale
-        if(input.isKeyDown(GLFW_KEY_1))
+        if(isKeyDown(GLFW_KEY_1))
             transform.scale.x -= speed;
-        if(input.isKeyDown(GLFW_KEY_2))
+        if(isKeyDown(GLFW_KEY_2))
             transform.scale.x += speed;
-        if(input.isKeyDown(GLFW_KEY_3))
+        if(isKeyDown(GLFW_KEY_3))
             transform.scale.y -= speed;
-        if(input.isKeyDown(GLFW_KEY_4))
+        if(isKeyDown(GLFW_KEY_4))
             transform.scale.y += speed;
-        if(input.isKeyDown(GLFW_KEY_5))
+        if(isKeyDown(GLFW_KEY_5))
             transform.scale.z -= speed;
-        if(input.isKeyDown(GLFW_KEY_6))
+        if(isKeyDown(GLFW_KEY_6))
             transform.scale.z += speed;
     }
 

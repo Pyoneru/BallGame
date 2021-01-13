@@ -4,12 +4,12 @@ import org.joml.Vector3f;
 import pl.piotrkniemczuk.ball.assets.Material;
 import pl.piotrkniemczuk.ball.assets.Mesh;
 import pl.piotrkniemczuk.ball.assets.Shader;
-import pl.piotrkniemczuk.ball.engine.Input;
 import pl.piotrkniemczuk.ball.engine.Transform;
 import pl.piotrkniemczuk.ball.engine.Window;
 import pl.piotrkniemczuk.ball.graphics.FreeCamera;
 import pl.piotrkniemczuk.ball.graphics.Light;
 import pl.piotrkniemczuk.ball.utils.OBJLoader;
+import static pl.piotrkniemczuk.ball.engine.Input.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL33.*;
@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL33.*;
 public class MaterialTest {
 
     private Window window;
-    private Input input;
+
     private FreeCamera camera;
 
     private Mesh mesh;
@@ -32,8 +32,7 @@ public class MaterialTest {
 
     private void Init(){
         this.window = new Window(1280, 720, "Material Test");
-        this.input = new Input(this.window);
-        this.camera = new FreeCamera(this.input, this.window);
+        this.camera = new FreeCamera(this.window);
         InitAssets();
         InitProperties();
         this.light = new Light(new Vector3f(5.0f, 15.0f, 0.0f));
@@ -66,7 +65,7 @@ public class MaterialTest {
 
     private void Update(float delta){
         this.camera.update(delta);
-        if(input.isKeyPressed(GLFW_KEY_ESCAPE))
+        if(isKeyPressed(GLFW_KEY_ESCAPE))
             this.window.shouldClose();
     }
 

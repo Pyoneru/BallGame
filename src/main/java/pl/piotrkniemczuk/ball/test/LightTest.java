@@ -13,11 +13,11 @@ import pl.piotrkniemczuk.ball.utils.OBJLoader;
 
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.glfw.GLFW.*;
+import static pl.piotrkniemczuk.ball.engine.Input.*;
 
 public class LightTest {
 
     private Window window;
-    private Input input;
     private FreeCamera camera;
 
     private Mesh mesh;
@@ -32,8 +32,7 @@ public class LightTest {
 
     private void Init(){
         this.window = new Window(1280, 720, "Light Test");
-        this.input = new Input(this.window);
-        this.camera = new FreeCamera(this.input, this.window);
+        this.camera = new FreeCamera(this.window);
         InitAssets();
         InitProperties();
         this.light = new Light(new Vector3f(10.0f, 12.0f, -5.0f));
@@ -68,7 +67,7 @@ public class LightTest {
 
     public void Update(float delta){
         this.camera.update(delta);
-        if(this.input.isKeyPressed(GLFW_KEY_ESCAPE))
+        if(isKeyPressed(GLFW_KEY_ESCAPE))
             this.window.shouldClose();
     }
 

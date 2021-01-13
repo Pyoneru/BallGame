@@ -13,11 +13,11 @@ import pl.piotrkniemczuk.ball.utils.OBJLoader;
 
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.glfw.GLFW.*;
+import static pl.piotrkniemczuk.ball.engine.Input.*;
 
 public class ObjLoaderTest {
 
     private Window window;
-    private Input input;
     private FreeCamera camera;
 
     private Mesh mesh;
@@ -30,8 +30,7 @@ public class ObjLoaderTest {
 
     private void Init(){
         this.window = new Window(1280, 720, "Obj Loader Test");
-        this.input = new Input(this.window);
-        this.camera = new FreeCamera(this.input, this.window);
+        this.camera = new FreeCamera(this.window);
         this.camera.velocity = 4.0f;
         InitAssets();
         this.window.show();
@@ -64,7 +63,7 @@ public class ObjLoaderTest {
 
     public void Update(float delta){
         camera.update(delta);
-        if(input.isKeyPressed(GLFW_KEY_ESCAPE))
+        if(isKeyPressed(GLFW_KEY_ESCAPE))
             this.window.shouldClose();
     }
 

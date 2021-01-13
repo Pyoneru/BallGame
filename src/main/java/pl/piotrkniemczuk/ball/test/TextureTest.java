@@ -4,7 +4,6 @@ import org.joml.Matrix4f;
 import pl.piotrkniemczuk.ball.assets.Mesh;
 import pl.piotrkniemczuk.ball.assets.Shader;
 import pl.piotrkniemczuk.ball.assets.Texture;
-import pl.piotrkniemczuk.ball.engine.Input;
 import pl.piotrkniemczuk.ball.engine.Transform;
 import pl.piotrkniemczuk.ball.engine.Window;
 
@@ -14,11 +13,12 @@ import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER;
 import static org.lwjgl.opengl.GL20.GL_VERTEX_SHADER;
 
+import static pl.piotrkniemczuk.ball.engine.Input.*;
+
 public class TextureTest {
 
     public TextureTest(){
         Window window = new Window(1280, 720, "Texture Test");
-        Input input = new Input(window);
         glViewport(0, 0, 1280, 720);
 
         float[] vertices = {
@@ -56,7 +56,7 @@ public class TextureTest {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         while(window.isOpen()){
 
-            if(input.isKeyPressed(GLFW_KEY_ESCAPE))
+            if(isKeyPressed(GLFW_KEY_ESCAPE))
                 glfwSetWindowShouldClose(window.getWindow(), true);
 
 

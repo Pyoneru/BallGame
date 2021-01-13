@@ -30,8 +30,7 @@ public class CameraTest {
 
     private void Init(){
         this.window = new Window(1280, 720, "Camera Test");
-        this.input = new Input(this.window);
-        this.camera = new FreeCamera(input, window);
+        this.camera = new FreeCamera(window);
         FreeCamera freeCamera = (FreeCamera) camera;
         freeCamera.velocity = 5f;
         InitAssets();

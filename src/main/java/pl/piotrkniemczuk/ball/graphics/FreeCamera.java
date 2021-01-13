@@ -6,6 +6,7 @@ import pl.piotrkniemczuk.ball.engine.Collider;
 import pl.piotrkniemczuk.ball.engine.Input;
 import pl.piotrkniemczuk.ball.engine.Window;
 import static org.lwjgl.glfw.GLFW.*;
+import static pl.piotrkniemczuk.ball.engine.Input.*;
 
 /**
  * Implementation of Camera Interface. Free Cam(like as First Person Camera)
@@ -18,7 +19,6 @@ public class FreeCamera extends Camera {
 
     protected Vector2f lastMousePos;
 
-    protected Input input;
     protected Vector2i windowSize;
 
     public float sensitivity;
@@ -27,15 +27,14 @@ public class FreeCamera extends Camera {
     private float pitch;
     private float yaw;
 
-    public FreeCamera(Vector3f cameraPosition, Input input, Window window){
+    public FreeCamera(Vector3f cameraPosition, Window window){
         super(cameraPosition, new Vector3f(), new Vector3f(1.0f, 1.0f, 1.0f));
         this.cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
         this.cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
         this.cameraRight = new Vector3f();
 
-        this.input = input;
         this.windowSize = window.getWindowSize();
-        this.lastMousePos = input.getMousePos();
+        this.lastMousePos = getMousePos();
 
         this.sensitivity = 0.05f;
         this.velocity = 1.0f;
@@ -44,8 +43,8 @@ public class FreeCamera extends Camera {
         this.yaw = 0.0f;
     }
 
-    public FreeCamera(Input input, Window window){
-        this(new Vector3f(), input, window);
+    public FreeCamera(Window window){
+        this(new Vector3f(), window);
     }
 
     @Override
@@ -74,33 +73,33 @@ public class FreeCamera extends Camera {
     protected void InputUpdate(float delta){
         float velocity = this.velocity * delta;
 
-        if(input.isKeyDown(GLFW_KEY_LEFT_SHIFT)){
+        if(isKeyDown(GLFW_KEY_LEFT_SHIFT)){
             velocity *= 10;
         }
 
-        if(input.isKeyDown(GLFW_KEY_W)){
+        if(isKeyDown(GLFW_KEY_W)){
             Vector3f mul = new Vector3f();
             cameraFront.mul(velocity, mul);
             position.add(mul, position);
-        }else if(input.isKeyDown(GLFW_KEY_S)){
+        }else if(isKeyDown(GLFW_KEY_S)){
             Vector3f mul = new Vector3f();
             cameraFront.mul(-velocity, mul);
             position.add(mul, position);
         }
 
-        if(input.isKeyDown(GLFW_KEY_A)){
+        if(isKeyDown(GLFW_KEY_A)){
             Vector3f mul = new Vector3f();
             cameraRight.mul(-velocity, mul);
             position.add(mul, position);
-        }else if(input.isKeyDown(GLFW_KEY_D)){
+        }else if(isKeyDown(GLFW_KEY_D)){
             Vector3f mul = new Vector3f();
             cameraRight.mul(velocity, mul);
             position.add(mul, position);
         }
 
-        if(input.isKeyDown(GLFW_KEY_SPACE)){
+        if(isKeyDown(GLFW_KEY_SPACE)){
             position.add(new Vector3f(0.0f, velocity, 0.0f), position);
-        }else if(input.isKeyDown(GLFW_KEY_LEFT_CONTROL)){
+        }else if(isKeyDown(GLFW_KEY_LEFT_CONTROL)){
             position.add(new Vector3f(0.0f, -velocity, 0.0f), position);
         }
 
@@ -110,7 +109,7 @@ public class FreeCamera extends Camera {
      * Update mouse move
      */
     protected void CameraUpdate(){
-        Vector2f mousePos = input.getMousePos();
+        Vector2f mousePos = getMousePos();
         float xoffset = mousePos.x - lastMousePos.x;
         float yoffset = lastMousePos.y - mousePos.y;
         lastMousePos = mousePos;
