@@ -15,7 +15,7 @@ public class GameState implements State {
     private Graphic graphic;
     private Board board;
     private Camera camera;
-    private float gravity = 0.9f;
+    private final float gravity = 0.9f;
     private GameEngine ge;
 
     @Override
