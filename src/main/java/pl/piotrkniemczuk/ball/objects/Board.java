@@ -7,7 +7,6 @@ import pl.piotrkniemczuk.ball.assets.Assets;
 import pl.piotrkniemczuk.ball.assets.Mesh;
 import pl.piotrkniemczuk.ball.assets.Shader;
 import pl.piotrkniemczuk.ball.engine.Collider;
-import pl.piotrkniemczuk.ball.engine.GameAnalyze;
 import pl.piotrkniemczuk.ball.engine.GameEngine;
 import pl.piotrkniemczuk.ball.engine.Transform;
 import pl.piotrkniemczuk.ball.graphics.Color;
@@ -18,31 +17,34 @@ import static org.lwjgl.opengl.GL33.*;
 
 public class Board {
 
-    private Mesh mesh;
-    private float borderBreak;
-    private Shader shader;
+    private final Mesh mesh;
+    private final float borderBreak;
+    private final Shader shader;
     private Transform transform;
-    private Field[][] fields;
-    private Border[][] borders;
-    private Vector2i size;
-    private Graphic graphic;
-    private int step;
-    private GameAnalyze ga;
+    private final Field[][] fields;
+    private final Border[][] borders;
+    private final Vector2i size;
+    private final Graphic graphic;
+    private final int step;
 
     public Board(Vector2i size, Vector3f position, int step){
-        ga = GameAnalyze.getInstance();
         transform = new Transform();
+        this.transform.position.set(position);
         this.size = size;
         this.step = step;
-        this.transform.position.set(position);
-        Assets assets = Assets.getInstance();
-        mesh = assets.getModel("plane");
+
         graphic = Graphic.getInstance();
-        borderBreak = 0.0001f;
+        Assets assets = Assets.getInstance();
+
+        mesh = assets.getModel("plane");
         shader = assets.getShader("Color");
+
+        borderBreak = 0.0001f;
         transform.rotation.x = (float)Math.toRadians(90.0f);
+
         fields = new Field[size.x][size.y];
         borders = new Border[size.x][size.y];
+
         InitializeBoard();
     }
 
@@ -103,7 +105,7 @@ public class Board {
         }else if(rand == 8){
             colors[1] = Color.Maroon;
             colors[0] = new Color(colors[1].red/step, colors[1].green/step, colors[1].blue/step);
-        }else if(rand == 9){
+        }else {
             colors[1] = Color.Magenta;
             colors[0] = new Color(colors[1].red/step, colors[1].green/step, colors[1].blue/step);
         }
@@ -162,69 +164,53 @@ public class Board {
     }
 
     public void DrawField(){
-        long timeAll = Utils.getTime();
         mesh.bind();
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
-        long avgSingle = 0;
         for(int y = 0; y < size.y; y++){
             for(int x = 0; x < size.x; x++){
-                long timeSinge = Utils.getTime();
                 shader.setModel(fields[x][y]);
                 shader.setVec3(fields[x][y].color.toVec3(), "Color");
                 shader.setMat4(new Matrix4f().rotateXYZ(fields[x][y].rotation), "Rotation");
 
                 glDrawElements(GL_TRIANGLES, mesh.getCount(), GL_UNSIGNED_INT, 0);
-                long time = Utils.getTime() - timeSinge;
-                avgSingle += time;
-//                System.out.println("Render single Field: " + time );
             }
         }
-        ga.timeAvgFields += (avgSingle/(size.y*size.x));
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
         mesh.unbind();
-        ga.timeAllFields += (Utils.getTime() - timeAll);
     }
 
     public void DrawBorder(){
-        long timeAll = Utils.getTime();
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
         mesh.bind();
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
-        long avgSingle = 0;
         for(int y = 0; y < size.y; y++){
             for(int x = 0; x < size.x; x++){
-                long single = Utils.getTime();
                 shader.setModel(borders[x][y].transform);
                 shader.setVec3(borders[x][y].color.toVec3(), "Color");
                 shader.setMat4(new Matrix4f().rotateXYZ(borders[x][y].transform.rotation), "Rotation");
 
                 glDrawArrays(GL_LINE_STRIP, 0, 5);
-                long time = Utils.getTime() - single;
-                avgSingle += time;
-//                System.out.println("Render single Border: " + time);
             }
         }
-        ga.timeAvgBorders += (avgSingle/(size.x*size.y));
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
         mesh.unbind();
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        ga.timeAllBorders +=  (Utils.getTime() - timeAll);
     }
 
     private class Field extends Collider {
         private int meter;
-        private int step;
-        private Color primaryColor;
+        private final int step;
+        private final Color primaryColor;
         public Color color;
 
         public Field(Color color, Transform transform, int step) {
@@ -294,7 +280,7 @@ public class Board {
         }
     }
 
-    private class Border{
+    private static class Border{
         public Color color;
         public Transform transform;
 

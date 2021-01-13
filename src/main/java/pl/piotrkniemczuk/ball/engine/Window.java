@@ -1,22 +1,22 @@
 package pl.piotrkniemczuk.ball.engine;
 
-import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.system.MemoryStack;
+import pl.piotrkniemczuk.ball.exceptions.FailedCreateWindowHandlerException;
+import pl.piotrkniemczuk.ball.exceptions.FailedInitializeGLFWException;
 
-import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
-public class Window {
+public class Window implements Dispose {
 
     /**
      * Window handle
      */
     private Long windowHandle;
+    private Vector2i size;
 
 
     /**
@@ -44,9 +44,9 @@ public class Window {
      * Initialize GLFW: OpenGL Version 3.3, Core Profile, Hidden Window, Not Resizable
      * @throws Exception throw exception if failed initialize glfw
      */
-    private void InitializeGLFW() throws Exception {
+    private void InitializeGLFW() throws FailedInitializeGLFWException {
         if(!glfwInit())
-            throw new Exception("Failed to initialize GLFW");
+            throw new FailedInitializeGLFWException();
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -63,13 +63,15 @@ public class Window {
      * @param title window title
      * @throws Exception throw exception if failed create window
      */
-    private void InitializeWindow(int width, int height, String title, boolean fullscreen) throws Exception {
+    private void InitializeWindow(int width, int height, String title, boolean fullscreen) throws FailedCreateWindowHandlerException {
         this.windowHandle = glfwCreateWindow(width, height, title, fullscreen ? glfwGetPrimaryMonitor() : NULL, NULL);
 
         if(this.windowHandle == NULL)
-            throw new Exception("Failed to create window");
+            throw new FailedCreateWindowHandlerException();
 
         glfwMakeContextCurrent(this.windowHandle);
+
+        this.size = new Vector2i(width, height);
     }
 
     /**
@@ -108,14 +110,7 @@ public class Window {
     }
 
     public Vector2i getWindowSize(){
-        Vector2i size = null;
-        try(MemoryStack stack = MemoryStack.stackPush()){
-            IntBuffer w = stack.mallocInt(1);
-            IntBuffer h = stack.mallocInt(1);
-            glfwGetWindowSize(this.windowHandle, w, h);
-            size = new Vector2i(w.get(), h.get());
-        }
-        return size;
+        return this.size;
     }
 
     /**
@@ -144,6 +139,7 @@ public class Window {
     /**
      * Destroy window and Terminate GLFW
      */
+    @Override
     public void clearMemory(){
         glfwDestroyWindow(this.windowHandle);
         glfwTerminate();

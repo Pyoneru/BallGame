@@ -7,7 +7,7 @@ import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
-
+// ToDo: Make Input methods static
 public class Input {
 
     /**

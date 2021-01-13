@@ -1,5 +1,6 @@
 package pl.piotrkniemczuk.ball.assets;
 
+import pl.piotrkniemczuk.ball.engine.Dispose;
 import pl.piotrkniemczuk.ball.utils.Utils;
 
 import java.nio.FloatBuffer;
@@ -7,7 +8,7 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL33.*;
 
-public class Mesh {
+public class Mesh implements Dispose {
 
     /**
      * Vertex Array Object Id
@@ -47,44 +48,6 @@ public class Mesh {
         glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
         glBufferData(GL_ARRAY_BUFFER, normal, GL_STATIC_DRAW);
         glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesEBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
-
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-        glDeleteBuffers(verticesVBO);
-        glDeleteBuffers(textureVBO);
-        glDeleteBuffers(normalVBO);
-        glDeleteBuffers(indicesEBO);
-    }
-
-    @Deprecated
-    public Mesh(FloatBuffer vertices, FloatBuffer texture, FloatBuffer normal, IntBuffer indices, int count){
-        this.count = count;
-
-        this.vao = glGenVertexArrays();
-        int verticesVBO = glGenBuffers();
-        int textureVBO = glGenBuffers();
-        int normalVBO = glGenBuffers();
-        int indicesEBO = glGenBuffers();
-
-        glBindVertexArray(this.vao);
-
-        glBindBuffer(GL_ARRAY_BUFFER, verticesVBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-
-//        glBindBuffer(GL_ARRAY_BUFFER, textureVBO);
-//        glBufferData(GL_ARRAY_BUFFER, texture, GL_STATIC_DRAW);
-//        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
-
-//        glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-//        glBufferData(GL_ARRAY_BUFFER, normal, GL_STATIC_DRAW);
-//        glVertexAttribPointer(2, 3, GL_FLOAT, false, 0, 0);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesEBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
@@ -148,9 +111,38 @@ public class Mesh {
     /**
      * Delete this VAO.
      */
+    @Override
     public void clearMemory() {
-        long time = Utils.getTime();
         glDeleteVertexArrays(this.vao);
-        System.out.println("Delete Mesh: " + (Utils.getTime() - time));
+    }
+
+    public static Mesh createPlane(){
+        float[] vertices = {
+                -1.0f, 1.0f, 0.0f,
+                -1.0f, -1.0f, 0.0f,
+                1.0f, -1.0f, 0.0f,
+                1.0f, 1.0f, 0.0f,
+                -1.0f, 1.0f, 0.0f
+        };
+
+        float[] texture = {
+                0.0f, 1.0f,
+                0.0f, 0.0f,
+                1.0f, 0.0f,
+                1.0f, 1.0f
+        };
+
+        float[] normal = {
+                0.0f, 0.0f, -1.0f,
+                0.0f, 0.0f, -1.0f,
+                0.0f, 0.0f, -1.0f,
+                0.0f, 0.0f, -1.0f
+        };
+
+        int[] indices = {
+                0, 1, 2,
+                2, 3, 0
+        };
+        return new Mesh(vertices, texture, normal, indices);
     }
 }

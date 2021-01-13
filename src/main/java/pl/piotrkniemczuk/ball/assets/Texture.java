@@ -1,6 +1,8 @@
 package pl.piotrkniemczuk.ball.assets;
 
 import org.lwjgl.system.MemoryStack;
+import pl.piotrkniemczuk.ball.engine.Dispose;
+import pl.piotrkniemczuk.ball.exceptions.BadChannelsTextureException;
 import pl.piotrkniemczuk.ball.utils.Utils;
 
 import java.nio.ByteBuffer;
@@ -9,7 +11,7 @@ import java.nio.IntBuffer;
 import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.stb.STBImage.*;
 
-public class Texture {
+public class Texture implements Dispose {
 
     /**
      * Texture Id
@@ -55,13 +57,11 @@ public class Texture {
         }else if(channels == 3){
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         }else{
-            try {
-                throw new Exception("Can not recognize channels value: " + channels);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            throw new BadChannelsTextureException(channels);
         }
         glGenerateMipmap(GL_TEXTURE_2D);
+
+        assert data != null;
         stbi_image_free(data);
         glBindTexture(GL_TEXTURE_2D, 0);
     }
@@ -113,9 +113,8 @@ public class Texture {
     }
 
 
+    @Override
     public void clearMemory(){
-        long time = Utils.getTime();
         glDeleteTextures(this.textureId);
-        System.out.println("Delete Texture" + (Utils.getTime() - time));
     }
 }

@@ -1,5 +1,7 @@
 package pl.piotrkniemczuk.ball.assets;
 
+import pl.piotrkniemczuk.ball.engine.Dispose;
+import pl.piotrkniemczuk.ball.engine.GameSettings;
 import pl.piotrkniemczuk.ball.utils.OBJLoader;
 import pl.piotrkniemczuk.ball.utils.Utils;
 
@@ -8,17 +10,20 @@ import java.util.Map;
 
 import static org.lwjgl.opengl.GL33.*;
 
-public class Assets {
+public class Assets implements Dispose {
 
     private static Assets instance;
+    public static String ASSETS_MODEL_PATH = "./Assets/Models/" ;
+    public static String ASSETS_TEXTURE_PATH = "./Assets/Textures/";
+    public static String ASSETS_SHADER_PATH = "./Assets/Shaders/";
 
     public enum ImageType{
         PNG, JPG
     }
 
-    private Map<String, Shader> shaders;
-    private Map<String, Mesh> meshes;
-    private Map<String, Texture> textures;
+    private final Map<String, Shader> shaders;
+    private final Map<String, Mesh> meshes;
+    private final Map<String, Texture> textures;
 
     private Assets(){
         this.shaders = new HashMap<>();
@@ -33,22 +38,22 @@ public class Assets {
     }
 
     public void addShader(String shader){
-        long time = Utils.getTime();
         this.shaders.put(shader, Shader.create()
-        .attachShader("./Assets/Shaders/" + shader + "Vertex.glsl", GL_VERTEX_SHADER)
-        .attachShader("./Assets/Shaders/" + shader + "Fragment.glsl", GL_FRAGMENT_SHADER)
+        .attachShader(ASSETS_SHADER_PATH + shader + "Vertex.glsl", GL_VERTEX_SHADER)
+        .attachShader(ASSETS_SHADER_PATH + shader + "Fragment.glsl", GL_FRAGMENT_SHADER)
         .link());
-        System.out.println("Create Shader: " + (Utils.getTime() - time));
     }
 
     public Shader getShader(String shader){
         return this.shaders.get(shader);
     }
 
+    /**
+     * Application can only meshes with .obj extension.
+     * @param mesh
+     */
     public void addModel(String mesh){
-        long time = Utils.getTime();
-        this.meshes.put(mesh, OBJLoader.loadModel("./Assets/Models/" + mesh + ".obj"));
-        System.out.println("Create Mesh(and load model): " + (Utils.getTime() - time));
+        this.meshes.put(mesh, OBJLoader.loadModel(ASSETS_MODEL_PATH + mesh + ".obj"));
     }
 
     public void addModel(String name, Mesh mesh){
@@ -60,20 +65,21 @@ public class Assets {
     }
 
     public void addTexture(String texture, ImageType type){
-        long time = Utils.getTime();
-        this.textures.put(texture, new Texture("./Assets/Textures/" + texture + "." + type.toString().toLowerCase()));
-        System.out.println("Create Texture: " + (Utils.getTime()- time));
+        this.textures.put(texture, new Texture(ASSETS_TEXTURE_PATH + texture + "." + type.toString().toLowerCase()));
+    }
+
+    public void addTexture(GameSettings.TexturePair texturePair){
+        this.addTexture(texturePair.texture, texturePair.type);
     }
 
     public Texture getTexture(String texture){
         return this.textures.get(texture);
     }
 
+    @Override
     public void clearMemory(){
-        long time = Utils.getTime();
         this.shaders.forEach((k, v) -> v.clearMemory());
         this.meshes.forEach((k, v) -> v.clearMemory());
         this.textures.forEach((k, v) -> v.clearMemory());
-        System.out.println("Delete all Assets: " + (Utils.getTime() - time));
     }
 }

@@ -10,23 +10,21 @@ import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class GameEngine {
+public class GameEngine implements Dispose {
 
-    private Window window;
-    private Input input;
+    private final Window window;
+    private final Input input;
     private Graphic graphic;
     private int fps;
     private State state;
     private List<Collider> colliders;
 
     public GameEngine(GameSettings settings, State state) {
-        long win = Utils.getTime();
         this.window = new Window(
                 settings.getWindowSize().x,
                 settings.getWindowSize().y,
                 settings.getTitle(),
                 settings.isFullscreen());
-        System.out.println("Create window: " + (Utils.getTime() - win));
         this.input = new Input(window);
         this.fps = settings.getFPS();
         AssetsInitialize(settings);
@@ -36,88 +34,57 @@ public class GameEngine {
     }
 
     private void GraphicInitialize(GameSettings settings) {
-        long graphicTime = Utils.getTime();
+        // Create graphic instance, first invoked.
         this.graphic = Graphic.getInstance();
-        System.out.println("Create Graphic: " + (Utils.getTime() - graphicTime));
+
+        // Enable Light
         this.graphic.setEnableLight(settings.isEnableLight());
-        long lightTime = Utils.getTime();
+
+        // Create Light Object and add to Graphic
         Light light = new Light(
                 settings.getLightPos(),
                 settings.getLightColor(),
                 settings.getLightAmbient(),
                 settings.getLightDiffuse(),
                 settings.getLightSpecular());
-        System.out.println("Create Light: " + (Utils.getTime() - lightTime));
         this.graphic.setLight(light);
+
+        // set Light Scale(for object)
         this.graphic.setLightScale(settings.getLightScale());
 
+        // Create Camera
         Camera camera = null;
-        if (settings.getCameraType().equals("free")) {
-            long cameraTime = Utils.getTime();
-            camera = new FreeCamera(settings.getCameraPos(), input, window);
-            System.out.println("Create Camera: " + (Utils.getTime() - cameraTime));
-        } else if (settings.getCameraType().equals("player")) {
-            long cameraTime = Utils.getTime();
-            camera = new PlayerCamera(settings.getCameraPos(), input, window);
-            System.out.println("Create Camera: " + (Utils.getTime() - cameraTime));
-        } else {
-            long cameraTime = Utils.getTime();
-            camera = new FreeCamera(settings.getCameraPos(), input, window);
-            System.out.println("Create Camera: " + (Utils.getTime() - cameraTime));
+        switch(settings.getCameraType()){
+            case "free":
+                camera = new FreeCamera(settings.getCameraPos(), input, window);
+                break;
+
+            case "player":
+                camera = new PlayerCamera(settings.getCameraPos(), input, window);
+                break;
+
+            default:
+                camera = new FreeCamera(settings.getCameraPos(), input, window);
+                break;
         }
         this.graphic.setCamera(camera);
     }
 
     private void AssetsInitialize(GameSettings settings) {
-        long assetsTime = Utils.getTime();
         Assets assets = Assets.getInstance();
-        System.out.println("Create Assets: " + (Utils.getTime() - assetsTime));
         settings.getShaders().forEach(assets::addShader);
         settings.getModels().forEach(assets::addModel);
-        for (GameSettings.TexturePair texturePair : settings.getTextures()) {
-            assets.addTexture(texturePair.texture, texturePair.type);
-        }
+        settings.getTextures().forEach(assets::addTexture);
+
         assets.addShader("Object");
         assets.addShader("Light");
         assets.addModel("cube");
-        float[] vertices = {
-                -1.0f, 1.0f, 0.0f,
-                -1.0f, -1.0f, 0.0f,
-                1.0f, -1.0f, 0.0f,
-                1.0f, 1.0f, 0.0f,
-                -1.0f, 1.0f, 0.0f
-        };
-
-        float[] texture = {
-                0.0f, 1.0f,
-                0.0f, 0.0f,
-                1.0f, 0.0f,
-                1.0f, 1.0f
-        };
-
-        float[] normal = {
-                0.0f, 0.0f, -1.0f,
-                0.0f, 0.0f, -1.0f,
-                0.0f, 0.0f, -1.0f,
-                0.0f, 0.0f, -1.0f
-        };
-
-        int[] indices = {
-                0, 1, 2,
-                2, 3, 0
-        };
-
-        long a = Utils.getTime();
-        assets.addModel("plane", new Mesh(vertices, texture, normal, indices));
-        System.out.println("Mesh: " + (Utils.getTime() - a));
+        assets.addModel("plane", Mesh.createPlane());
     }
 
     public void start() {
-        GameAnalyze ga = GameAnalyze.getInstance();
         window.show();
         double lastTime = glfwGetTime();
-        double nextCounter = lastTime + 1.0;
-        int fpsCounter = 0;
         while (window.isOpen()) {
             double currentTime = glfwGetTime();
             double delta = currentTime - lastTime;
@@ -129,22 +96,12 @@ public class GameEngine {
             }
             graphic.render();
             state.Render(window, input, this);
-            ga.timeMeter += 1;
             window.display();
-            fpsCounter++;
-            if(currentTime >= nextCounter){
-                ga.avgFPS = ga.avgFPS + fpsCounter;
-                ga.avg++;
-                if(fpsCounter < ga.minFPS) ga.minFPS = fpsCounter;
-                if(fpsCounter > ga.maxFPS) ga.maxFPS = fpsCounter;
-                fpsCounter = 0;
-                nextCounter = currentTime + 1.0;
-                ga.update();
-            }
         }
         clearMemory();
     }
 
+    // ToDo: Rework Collision Detection
     private void CollisionDetection() {
         for (Collider collider : colliders) {
             for (Collider collider1 : colliders) {
@@ -193,6 +150,7 @@ public class GameEngine {
         this.state.Init(window, input, this);
     }
 
+    @Override
     public void clearMemory() {
         Assets.getInstance().clearMemory();
         this.window.clearMemory();

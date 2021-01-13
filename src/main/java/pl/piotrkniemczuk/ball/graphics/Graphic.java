@@ -5,7 +5,6 @@ import pl.piotrkniemczuk.ball.assets.Assets;
 import pl.piotrkniemczuk.ball.assets.Mesh;
 import pl.piotrkniemczuk.ball.assets.Shader;
 import pl.piotrkniemczuk.ball.assets.Texture;
-import pl.piotrkniemczuk.ball.engine.GameAnalyze;
 import pl.piotrkniemczuk.ball.objects.GameObject;
 import pl.piotrkniemczuk.ball.utils.Utils;
 
@@ -24,10 +23,8 @@ public class Graphic {
     private float lightScale;
     // --------------------------
 
-    private GameAnalyze ga;
 
     private Graphic(){
-        ga = GameAnalyze.getInstance();
         Assets assets = Assets.getInstance();
         objectShader = assets.getShader("Object");
         lightShader = assets.getShader("Light");
@@ -59,7 +56,6 @@ public class Graphic {
         lightShader.setVec3(light.getColor().toVec3(), "Color");
         lightMesh.render();
         lightShader.unbind();
-        ga.timeLight += (Utils.getTime() - time);
     }
 
     public void render(GameObject object){

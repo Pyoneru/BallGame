@@ -3,6 +3,7 @@ package pl.piotrkniemczuk.ball.assets;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
+import pl.piotrkniemczuk.ball.engine.Dispose;
 import pl.piotrkniemczuk.ball.engine.Transform;
 import pl.piotrkniemczuk.ball.graphics.Light;
 import pl.piotrkniemczuk.ball.utils.Constants;
@@ -12,7 +13,7 @@ import java.nio.FloatBuffer;
 
 import static org.lwjgl.opengl.GL33.*;
 
-public class Shader {
+public class Shader implements Dispose {
 
     /**
      * Shader program id
@@ -168,9 +169,8 @@ public class Shader {
     /**
      * Delete this program
      */
+    @Override
     public void clearMemory(){
-        long time = Utils.getTime();
         glDeleteProgram(this.program);
-        System.out.println("Delete Shader: " + (Utils.getTime() - time));
     }
 }

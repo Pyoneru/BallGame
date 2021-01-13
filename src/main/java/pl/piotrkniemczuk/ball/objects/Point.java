@@ -13,9 +13,9 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Point extends Collider {
 
     private boolean collected;
-    private Mesh mesh;
-    private Color color;
-    private Shader shader;
+    private final Mesh mesh;
+    private final Color color;
+    private final Shader shader;
     private float speed;
 
     public Point(Color color){
